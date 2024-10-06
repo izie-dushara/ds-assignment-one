@@ -14,6 +14,8 @@ class HotelReview {
 	HotelReview(int reviewIndex, std::string reviewDescription, int reviewRating);
 	~HotelReview();
 	void setHotelReview(int reviewIndex, std::string reviewDescription, int viewRating);
-	void displayHotelReview();
+	int getIndex() const;
+	std::string getReview() const;
+	int getRating() const;
 };
 #endif

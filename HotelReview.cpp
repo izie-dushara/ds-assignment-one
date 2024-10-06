@@ -22,12 +22,20 @@ void HotelReview::setHotelReview(int reviewIndex, std::string reviewDescription,
 	this->reviewRating = reviewRating;
 }
 
-void HotelReview::displayHotelReview()
+int HotelReview::getIndex() const
 {
-	std::cout << "Hotel Review: " << reviewDescription;
+	return this->reviewIndex;
+}
+
+std::string HotelReview::getReview() const
+{
+	return this->reviewDescription;
+}
+int HotelReview::getRating() const
+{
+	return this->reviewRating;
 }
 
 HotelReview::~HotelReview()
 {
-	std::cout << "Deleted: " << this->reviewIndex;
 }
