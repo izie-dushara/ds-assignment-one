@@ -1,5 +1,4 @@
-#ifndef HOTELREVIEWS_HPP
-#define HOTELREVIEWS_HPP
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -22,4 +21,3 @@ class HotelReviews {
 	void displayReviews(int numberOfReviews = 10) const;
 	void calculateWordFrequencies(const Words &positiveWords, const Words &negativeWords);
 };
-#endif

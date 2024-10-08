@@ -1,5 +1,4 @@
-#ifndef WORDS_HPP
-#define WORDS_HPP
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -19,5 +18,3 @@ public:
 	int getSize() const;
 	bool contains(const std::string &words) const;
 };
-
-#endif

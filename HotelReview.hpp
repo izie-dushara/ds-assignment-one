@@ -1,5 +1,4 @@
-#ifndef HOTELREVIEW_HPP
-#define HOTELREVIEW_HPP
+#pragma once
 
 #include <string>
 
@@ -18,4 +17,3 @@ class HotelReview {
 	std::string getReview() const;
 	int getRating() const;
 };
-#endif
