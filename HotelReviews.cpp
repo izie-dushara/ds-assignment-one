@@ -1,8 +1,5 @@
 #include "HotelReviews.hpp"
 #include "HotelReview.hpp"
-#include <iostream>
-#include <fstream>
-#include <algorithm>
 
 HotelReviews::HotelReviews(int size, const std::string &hotelCsvFile)
 	: arraySize(size), count(0)

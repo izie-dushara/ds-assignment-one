@@ -2,6 +2,9 @@
 #define HOTELREVIEWS_HPP
 
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
 #include "HotelReview.hpp"
 class HotelReviews {
 	private:
