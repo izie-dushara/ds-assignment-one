@@ -8,23 +8,13 @@
 int main()
 {
 	std::string hotelCsvFile = "tripadvisor_hotel_reviews.csv";
+	std::string positiveWordsTxt = "positive-words.txt";
+	std::string negativeWordsTxt = "negative-words.txt";
 
 	HotelReviews reviewsCollection(SizeConstants::CsvFileSize, hotelCsvFile);
+	Words positiveWordsArray(positiveWordsTxt, SizeConstants::PositiveFileSize);
+	Words negativeWordsArray(negativeWordsTxt, SizeConstants::NegativeFileSize);
 
-	HotelReview reviewDescription = reviewsCollection.getReview(3);
-	std::cout << reviewsCollection.getReview(3).getReview();
-
-	reviewsCollection.getReview(3);
-	std::cout << reviewsCollection.getCount();
-
-	const int ARRAYSIZE = 100;
-	std::string filename = "positive-words.txt";
-	Words positivieWords(filename, SizeConstants::PositiveFileSize);
-
-	// for (size_t i = 0; i < positivieWords.getSize(); i++)
-	// {
-	// 	std::cout << positivieWords.getWord(i) << std::endl;
-	// }
-
+    reviewsCollection.calculateWordFrequencies(positiveWordsArray, negativeWordsArray);
 	return 0;
 }

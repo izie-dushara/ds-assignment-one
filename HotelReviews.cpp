@@ -53,6 +53,32 @@ int HotelReviews::getCount() const
 	return count;
 }
 
+void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Words &negativeWords)
+{
+	int positiveCountOverall = 0;
+	int negativeCountOverall = 0;
+
+	for (size_t i = 0; i < HotelReviews::getCount(); i++)
+	{
+		std::string hotelReview = hotelReviews[i].getReview();
+		std::istringstream iss(hotelReview);
+		std::string targetWord;
+		while (iss >> targetWord)
+		{
+			targetWord.erase(remove_if(targetWord.begin(), targetWord.end(), ispunct), targetWord.end());
+
+			if (positiveWords.contains(targetWord))
+				positiveCountOverall++;
+			else if (negativeWords.contains(targetWord))
+				negativeCountOverall++;
+		}
+	}
+
+	std::cout << "Total Reviews: " << HotelReviews::getCount() - 2;
+	std::cout << "Total Counts of Positive Words Used = " << positiveCountOverall << "\n";
+	std::cout << "Total Counts of Negative Words Used = " << negativeCountOverall << "\n";
+}
+
 // Display reviews (for debugging or output)
 void HotelReviews::displayReviews(int numberOfReviews) const
 {

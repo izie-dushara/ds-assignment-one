@@ -6,6 +6,8 @@
 #include <fstream>
 #include <algorithm>
 #include "HotelReview.hpp"
+#include "Words.hpp"
+
 class HotelReviews {
 	private:
 	HotelReview* hotelReviews;
@@ -18,5 +20,6 @@ class HotelReviews {
 	HotelReview getReview(int index) const;
 	int getCount() const;
 	void displayReviews(int numberOfReviews = 10) const;
+	void calculateWordFrequencies(const Words &positiveWords, const Words &negativeWords);
 };
 #endif

@@ -42,3 +42,13 @@ int Words::getSize() const
 {
 	return size;
 }
+
+bool Words::contains(const std::string &words) const
+{
+	for (size_t i = 0; i < size; i++)
+	{
+		if (Words::getWord(i) == words)
+			return true;
+	}
+	return false;
+}
