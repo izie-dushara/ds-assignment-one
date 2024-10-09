@@ -57,7 +57,7 @@ int HotelReviews::findWordIndex(const std::string &targetWord, std::string wordL
 {
 	for (int i = 0; i < wordCount; i++)
 	{
-		if(wordList[i] == targetWord)
+		if (wordList[i] == targetWord)
 			return i;
 	}
 
@@ -92,7 +92,7 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 				if (wordIndex != -1)
 				{
 					positiveWordFrequencies[wordIndex]++;
-				} 
+				}
 				else
 				{
 					if (uniquePositiveWordCount < 10000)
@@ -135,6 +135,8 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 		}
 	}
 
+	insertionSort(positiveWordsList, positiveWordFrequencies, uniquePositiveWordCount);
+	insertionSort(negativeWordsList, negativeWordFrequencies, uniqueNegativeWordCount);
 	system("cls");
 	std::cout << "Total Reviews: " << HotelReviews::getCount() - 2 << "\n";
 	std::cout << "Total Counts of Positive Words Used = " << positiveCountOverall << "\n";
@@ -150,7 +152,6 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 	{
 		std::cout << negativeWordsList[i] << " is used " << negativeWordFrequencies[i] << " times \n";
 	}
-
 }
 
 // Display reviews (for debugging or output)
@@ -161,5 +162,25 @@ void HotelReviews::displayReviews(int numberOfReviews) const
 		std::cout << hotelReviews[i].getIndex() << ": "
 				  << hotelReviews[i].getReview() << " - Rating: "
 				  << hotelReviews[i].getRating() << "\n";
+	}
+}
+
+void HotelReviews::insertionSort(std::string wordList[], int frequencies[], int count)
+{
+	for (size_t i = 1; i < count; i++)
+	{
+		std::string targetWord = wordList[i];
+		int  wordFrequency = frequencies[i];
+		int j = i - 1;
+
+		while (j >= 0 && frequencies[j] > wordFrequency)
+		{
+			wordList[j + 1] = wordList[j];
+			frequencies[j + 1] = frequencies[j];
+			j--;
+		}
+
+		wordList[j + 1] = targetWord;
+		frequencies[j + 1] = wordFrequency;
 	}
 }
