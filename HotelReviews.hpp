@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <iomanip>
 #include <chrono>
 #include "HotelReview.hpp"
 #include "Words.hpp"
@@ -24,6 +25,7 @@ public:
 	void displayReviews(int numberOfReviews = 10) const;
 	void calculateWordFrequencies(const Words &positiveWords, const Words &negativeWords);
 	void analyzeSingleReview(const Words &positiveWords, const Words &negativeWords);
+	double calculateSentimentScore(int positiveWordCount, int negativeWordCount);
 	int findWordIndex(const std::string &word, std::string wordList[], int wordCount);
 	void insertionSort(std::string wordList[], int frequencies[], int count);
 	void merging(std::string wordList[], int frequencies[], int left, int middle, int right);
