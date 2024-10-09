@@ -137,15 +137,19 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 		}
 	}
 
-	
+	auto start = std::chrono::high_resolution_clock::now();
 	// insertionSort(positiveWordsList, positiveWordFrequencies, uniquePositiveWordCount);
 	// insertionSort(negativeWordsList, negativeWordFrequencies, uniqueNegativeWordCount);
 	mergeSort(positiveWordsList, positiveWordFrequencies, 0, uniquePositiveWordCount - 1);
 	mergeSort(negativeWordsList, negativeWordFrequencies, 0, uniqueNegativeWordCount - 1);
+	auto stop = std::chrono::high_resolution_clock::now();
 	system("cls");
 	std::cout << "Total Reviews: " << HotelReviews::getCount() - 2 << "\n";
 	std::cout << "Total Counts of Positive Words Used = " << positiveCountOverall << "\n";
 	std::cout << "Total Counts of Negative Words Used = " << negativeCountOverall << "\n";
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	std::cout << "Total Time Sorting Word With Insertion Sort Ascending = " << duration.count() << "microseconds\n";
+	std::cout << "Total Time Sorting Word With Merge Sort Ascending = " << duration.count() << "microseconds\n";
 
 	int limitPositive = std::min(uniquePositiveWordCount, 20);
 	int limitNegative = std::min(uniqueNegativeWordCount, 20);
