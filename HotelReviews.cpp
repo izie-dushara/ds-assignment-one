@@ -144,12 +144,12 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 	mergeSort(negativeWordsList, negativeWordFrequencies, 0, uniqueNegativeWordCount - 1);
 	auto stop = std::chrono::high_resolution_clock::now();
 	system("cls");
-	std::cout << "Total Reviews: " << HotelReviews::getCount() - 2 << "\n";
+	std::cout << "Total Reviews: " << HotelReviews::getCount() - 1 << "\n";
 	std::cout << "Total Counts of Positive Words Used = " << positiveCountOverall << "\n";
 	std::cout << "Total Counts of Negative Words Used = " << negativeCountOverall << "\n";
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-	std::cout << "Total Time Sorting Word With Insertion Sort Ascending = " << duration.count() << "microseconds\n";
-	std::cout << "Total Time Sorting Word With Merge Sort Ascending = " << duration.count() << "microseconds\n";
+	// std::cout << "Total Time Sorting Word With Insertion Sort Ascending = " << duration.count() << " microseconds\n";
+	std::cout << "Total Time Sorting Word With Merge Sort Ascending = " << duration.count() << " microseconds\n";
 
 	int limitPositive = std::min(uniquePositiveWordCount, 20);
 	int limitNegative = std::min(uniqueNegativeWordCount, 20);
@@ -290,4 +290,75 @@ void HotelReviews::mergeSort(std::string wordList[], int frequencies[], int left
 	mergeSort(wordList, frequencies, middle + 1, right);
 
 	merging(wordList, frequencies, left, middle, right);
+}
+
+void HotelReviews::analyzeSingleReview(const Words &positiveWords, const Words &negativeWords)
+{
+	int userSearchReview;
+
+	std::string positiveWordsList[50];
+	int uniquePositiveWordCount = 0;
+
+	std::string negativeWordsList[50];
+	int uniqueNegativeWordCount = 0;
+
+	do
+	{
+		std::cout << "Enter which review you want: ";
+		std::cin >> userSearchReview;
+		if (std::cin.fail() || userSearchReview < 1 || userSearchReview > 20490)
+		{
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			std::cout << "Invalid Input! Reviews available is in range of 1 to 20 490!\n\n";
+		}
+	} while (userSearchReview < 1 || userSearchReview > 20490);
+
+	std::string reviewDisplay = hotelReviews[userSearchReview].getReview();
+	reviewDisplay.erase(std::remove(reviewDisplay.begin(), reviewDisplay.end(), '\"'), reviewDisplay.end());
+
+	std::cout << reviewDisplay << "\n";
+	std::istringstream iss(reviewDisplay);
+	std::string targetWord;
+	while (iss >> targetWord)
+	{
+		targetWord.erase(remove_if(targetWord.begin(), targetWord.end(), ispunct), targetWord.end());
+		if (positiveWords.contains(targetWord))
+		{
+			if (uniquePositiveWordCount < 10000)
+			{
+				positiveWordsList[uniquePositiveWordCount] = targetWord;
+				uniquePositiveWordCount++;
+			}
+			else
+			{
+				std::cout << "Warning: Maximum positive word limit reached.\n";
+			}
+		}
+		else if (negativeWords.contains(targetWord))
+		{
+			if (uniqueNegativeWordCount < 10000)
+			{
+				negativeWordsList[uniqueNegativeWordCount] = targetWord;
+				uniqueNegativeWordCount++;
+			}
+			else
+			{
+				std::cout << "Warning: Maximum negative word limit reached'\n";
+			}
+		}
+	}
+
+	std::cout << "Positive Word Frequencies = " << uniquePositiveWordCount << "\n";
+	for (int i = 0; i < uniquePositiveWordCount; i++)
+	{
+		std::cout << "- " << positiveWordsList[i] << "\n";
+	}
+	
+
+	std::cout << "Negative Word Frequencies = " << uniqueNegativeWordCount << "\n";
+	for (int i = 0; i < uniqueNegativeWordCount; i++)
+	{
+		std::cout << "- " << negativeWordsList[i] << "\n";
+	}
 }
