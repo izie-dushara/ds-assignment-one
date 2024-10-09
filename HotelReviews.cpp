@@ -100,7 +100,9 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 						positiveWordsList[uniquePositiveWordCount] = targetWord;
 						positiveWordFrequencies[uniquePositiveWordCount] = 1;
 						uniquePositiveWordCount++;
-						std::cout << uniquePositiveWordCount;
+
+						if (uniquePositiveWordCount % 100 == 0)
+							std::cout << "Processing information. Might take a while. Grab a cup of coffee first~ \n";
 					}
 					else
 					{
@@ -135,18 +137,39 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 		}
 	}
 
-	insertionSort(positiveWordsList, positiveWordFrequencies, uniquePositiveWordCount);
-	insertionSort(negativeWordsList, negativeWordFrequencies, uniqueNegativeWordCount);
+	
+	// insertionSort(positiveWordsList, positiveWordFrequencies, uniquePositiveWordCount);
+	// insertionSort(negativeWordsList, negativeWordFrequencies, uniqueNegativeWordCount);
+	mergeSort(positiveWordsList, positiveWordFrequencies, 0, uniquePositiveWordCount - 1);
+	mergeSort(negativeWordsList, negativeWordFrequencies, 0, uniqueNegativeWordCount - 1);
 	system("cls");
 	std::cout << "Total Reviews: " << HotelReviews::getCount() - 2 << "\n";
 	std::cout << "Total Counts of Positive Words Used = " << positiveCountOverall << "\n";
 	std::cout << "Total Counts of Negative Words Used = " << negativeCountOverall << "\n";
+
+	int limitPositive = std::min(uniquePositiveWordCount, 20);
+	int limitNegative = std::min(uniqueNegativeWordCount, 20);
+
+	std::cout << "Most Used Positive Words: ";
+	for (size_t i = uniquePositiveWordCount - 1; i >= uniquePositiveWordCount - limitPositive; i--)
+	{
+		std::cout << positiveWordsList[i] << (i > uniquePositiveWordCount - limitPositive ? ", " : "\n");
+	}
+
+	std::cout << "Most Used Negative Words: ";
+	for (size_t i = uniqueNegativeWordCount - 1; i >= uniqueNegativeWordCount - limitNegative; i--)
+	{
+		std::cout << negativeWordsList[i] << (i > uniqueNegativeWordCount - limitPositive ? ", " : "\n");
+	}
+
+	system("pause");
 
 	std::cout << "Positive Word Frequencies: \n";
 	for (int i = 0; i < uniquePositiveWordCount; i++)
 	{
 		std::cout << positiveWordsList[i] << " is used " << positiveWordFrequencies[i] << " times \n";
 	}
+	system("pause");
 	std::cout << "Negative Word Frequencies: \n";
 	for (int i = 0; i < uniqueNegativeWordCount; i++)
 	{
@@ -170,7 +193,7 @@ void HotelReviews::insertionSort(std::string wordList[], int frequencies[], int 
 	for (size_t i = 1; i < count; i++)
 	{
 		std::string targetWord = wordList[i];
-		int  wordFrequency = frequencies[i];
+		int wordFrequency = frequencies[i];
 		int j = i - 1;
 
 		while (j >= 0 && frequencies[j] > wordFrequency)
@@ -183,4 +206,84 @@ void HotelReviews::insertionSort(std::string wordList[], int frequencies[], int 
 		wordList[j + 1] = targetWord;
 		frequencies[j + 1] = wordFrequency;
 	}
+}
+
+void HotelReviews::merging(std::string wordList[], int frequencies[], int left, int middle, int right)
+{
+	int leftSize = middle - left + 1;
+	int rightSize = right - middle;
+
+	std::string *leftWords = new std::string[leftSize];
+	int *leftFrequencies = new int[leftSize];
+	std::string *rightWords = new std::string[rightSize];
+	int *rightFrequencies = new int[rightSize];
+
+	for (size_t i = 0; i < leftSize; i++)
+	{
+		leftWords[i] = wordList[left + i];
+		leftFrequencies[i] = frequencies[left + i];
+	}
+
+	for (size_t j = 0; j < rightSize; j++)
+	{
+		rightWords[j] = wordList[middle + 1 + j];
+		rightFrequencies[j] = frequencies[middle + 1 + j];
+	}
+
+	int i = 0;
+	int j = 0;
+	int k = left;
+
+	while (i < leftSize && j < rightSize)
+	{
+		if (leftFrequencies[i] <= rightFrequencies[j])
+		{
+			wordList[k] = leftWords[i];
+			frequencies[k] = leftFrequencies[i];
+			i++;
+		}
+		else
+		{
+			wordList[k] = rightWords[j];
+			frequencies[k] = rightFrequencies[j];
+			j++;
+		}
+		k++;
+	}
+
+	while (i < leftSize)
+	{
+		wordList[k] = leftWords[i];
+		frequencies[k] = leftFrequencies[i];
+		i++;
+		k++;
+	}
+
+	while (j < rightSize)
+	{
+		wordList[k] = rightWords[j];
+		frequencies[k] = rightFrequencies[j];
+		j++;
+		k++;
+	}
+
+	delete[] leftWords;
+	delete[] leftFrequencies;
+	delete[] rightWords;
+	delete[] rightFrequencies;
+}
+
+void HotelReviews::mergeSort(std::string wordList[], int frequencies[], int left, int right)
+{
+	if (left >= right)
+	{
+		return;
+	}
+
+	int middle = left + (right - left) / 2;
+
+	mergeSort(wordList, frequencies, left, middle);
+	mergeSort(wordList, frequencies, middle + 1, right);
+
+	merging(wordList, frequencies, left, middle, right);
 }
