@@ -11,9 +11,9 @@ int main()
 	const std::string positiveWordsTxt = "positive-words.txt";
 	const std::string negativeWordsTxt = "negative-words.txt";
 
-	HotelReviews reviewsCollection(SizeConstants::CsvFileSize, hotelCsvFile);
-	Words positiveWordsArray(positiveWordsTxt, SizeConstants::PositiveFileSize);
-	Words negativeWordsArray(negativeWordsTxt, SizeConstants::NegativeFileSize);
+	HotelReviews reviewsCollection(hotelCsvFile);
+	Words positiveWordsArray(positiveWordsTxt);
+	Words negativeWordsArray(negativeWordsTxt);
 
 	int choice = 0;
 

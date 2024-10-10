@@ -1,11 +1,9 @@
 #include "HotelReviews.hpp"
 #include "HotelReview.hpp"
 
-HotelReviews::HotelReviews(int size, const std::string &hotelCsvFile)
-	: arraySize(size), count(0)
+HotelReviews::HotelReviews(const std::string &hotelCsvFile)
+	: hotelReviews()
 {
-	hotelReviews = new HotelReview[arraySize];
-
 	std::ifstream reviewCsvFile(hotelCsvFile);
 	if (!reviewCsvFile.is_open())
 	{
@@ -20,7 +18,8 @@ HotelReviews::HotelReviews(int size, const std::string &hotelCsvFile)
 	std::string csvHeader;
 	getline(reviewCsvFile, csvHeader);
 
-	while (getline(reviewCsvFile, reviewWholeLine) && count < arraySize)
+	int index = 0;
+	while (getline(reviewCsvFile, reviewWholeLine))
 	{
 		size_t lastCommaPositon = reviewWholeLine.find_last_of(',');
 
@@ -29,8 +28,10 @@ HotelReviews::HotelReviews(int size, const std::string &hotelCsvFile)
 			reviewDescription = reviewWholeLine.substr(0, lastCommaPositon);
 			reviewRating = reviewWholeLine.substr(lastCommaPositon + 1);
 
-			hotelReviews[count].setHotelReview(count + 1, reviewDescription, std::stod(reviewRating));
-			count++;
+			HotelReview newReview;
+			newReview.setHotelReview(index + 1, reviewDescription, std::stod(reviewRating));
+			hotelReviews.add(newReview);
+			index++;
 		}
 	}
 	reviewCsvFile.close();
@@ -38,19 +39,17 @@ HotelReviews::HotelReviews(int size, const std::string &hotelCsvFile)
 
 HotelReviews::~HotelReviews()
 {
-	delete[] hotelReviews;
+	hotelReviews.clear();
 }
 
 HotelReview HotelReviews::getReview(int index) const
 {
-	if (index >= 0 && index < count)
-		return hotelReviews[index];
-	return HotelReview();
+	return hotelReviews.get(index);
 }
 
 int HotelReviews::getCount() const
 {
-	return count;
+	return hotelReviews.getSize();
 }
 
 int HotelReviews::findWordIndex(const std::string &targetWord, std::string wordList[], int wordCount)
@@ -77,15 +76,16 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 	int negativeWordFrequencies[10000] = {0};
 	int uniqueNegativeWordCount = 0;
 
+	auto startSearching = std::chrono::high_resolution_clock::now();
 	for (size_t i = 0; i < HotelReviews::getCount(); i++)
 	{
-		std::string hotelReview = hotelReviews[i].getReview();
+		std::string hotelReview = hotelReviews.get(i).getReview();
 		std::istringstream iss(hotelReview);
 		std::string targetWord;
+		std::cout << "Processing information. Might take a while (around null minutes). Grab a cup of coffee first~ \n";
 		while (iss >> targetWord)
 		{
 			targetWord.erase(remove_if(targetWord.begin(), targetWord.end(), ispunct), targetWord.end());
-
 			if (positiveWords.contains(targetWord))
 			{
 				int wordIndex = findWordIndex(targetWord, positiveWordsList, uniquePositiveWordCount);
@@ -95,6 +95,7 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 				}
 				else
 				{
+
 					if (uniquePositiveWordCount < 10000)
 					{
 						positiveWordsList[uniquePositiveWordCount] = targetWord;
@@ -102,7 +103,7 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 						uniquePositiveWordCount++;
 
 						if (uniquePositiveWordCount % 100 == 0)
-							std::cout << "Processing information. Might take a while. Grab a cup of coffee first~ \n";
+							std::cout << "Processing information. Might take a while (around null minutes). Grab a cup of coffee first~ \n";
 					}
 					else
 					{
@@ -136,20 +137,24 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 			}
 		}
 	}
+	auto stopSearching = std::chrono::high_resolution_clock::now();
 
-	auto start = std::chrono::high_resolution_clock::now();
+	auto startSorting = std::chrono::high_resolution_clock::now();
 	// insertionSort(positiveWordsList, positiveWordFrequencies, uniquePositiveWordCount);
 	// insertionSort(negativeWordsList, negativeWordFrequencies, uniqueNegativeWordCount);
 	mergeSort(positiveWordsList, positiveWordFrequencies, 0, uniquePositiveWordCount - 1);
 	mergeSort(negativeWordsList, negativeWordFrequencies, 0, uniqueNegativeWordCount - 1);
-	auto stop = std::chrono::high_resolution_clock::now();
+	auto stopSorting = std::chrono::high_resolution_clock::now();
 	system("cls");
 	std::cout << "Total Reviews: " << HotelReviews::getCount() - 1 << "\n";
 	std::cout << "Total Counts of Positive Words Used = " << positiveCountOverall << "\n";
 	std::cout << "Total Counts of Negative Words Used = " << negativeCountOverall << "\n";
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-	// std::cout << "Total Time Sorting Word With Insertion Sort Ascending = " << duration.count() << " microseconds\n";
-	std::cout << "Total Time Sorting Word With Merge Sort Ascending = " << duration.count() << " microseconds\n";
+	auto durationSorting = std::chrono::duration_cast<std::chrono::microseconds>(stopSorting - startSorting);
+	// std::cout << "Total Time Sorting Word With Insertion Sort Ascending = " << durationSorting.count() << " microseconds\n";
+	std::cout << "Total Time Sorting Word With Merge Sort Ascending = " << durationSorting.count() << " microseconds\n";
+
+	auto durationSearching = std::chrono::duration_cast<std::chrono::seconds>(stopSearching - startSearching);
+	std::cout << "Total Time Searching and Organizing = " << durationSearching.count() << " seconds\n";
 
 	int limitPositive = std::min(uniquePositiveWordCount, 20);
 	int limitNegative = std::min(uniqueNegativeWordCount, 20);
@@ -178,17 +183,6 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 	for (int i = 0; i < uniqueNegativeWordCount; i++)
 	{
 		std::cout << negativeWordsList[i] << " is used " << negativeWordFrequencies[i] << " times \n";
-	}
-}
-
-// Display reviews (for debugging or output)
-void HotelReviews::displayReviews(int numberOfReviews) const
-{
-	for (size_t i = 0; i < std::min(count, numberOfReviews); i++)
-	{
-		std::cout << hotelReviews[i].getIndex() << ": "
-				  << hotelReviews[i].getReview() << " - Rating: "
-				  << hotelReviews[i].getRating() << "\n";
 	}
 }
 
@@ -339,7 +333,7 @@ void HotelReviews::analyzeSingleReview(const Words &positiveWords, const Words &
 		}
 	} while (userSearchReview < 0 || userSearchReview > HotelReviews::getCount());
 
-	std::string reviewDisplay = hotelReviews[userSearchReview].getReview();
+	std::string reviewDisplay = hotelReviews.get(userSearchReview).getReview();
 	reviewDisplay.erase(std::remove(reviewDisplay.begin(), reviewDisplay.end(), '\"'), reviewDisplay.end());
 
 	std::cout << reviewDisplay << "\n";
@@ -388,10 +382,10 @@ void HotelReviews::analyzeSingleReview(const Words &positiveWords, const Words &
 
 	int calculatedSentimentScore = calculateSentimentScore(uniquePositiveWordCount, uniqueNegativeWordCount);
 	std::cout << "Sentiment Score (1 - 5): " << calculatedSentimentScore << "\n";
-	std::cout << "Rating Given By User: " << hotelReviews[userSearchReview].getRating() << "\n";
+	std::cout << "Rating Given By User: " << hotelReviews.get(userSearchReview).getRating() << "\n";
 	system("pause");
 	std::cout << "Analysis Output:\n";
-	if (hotelReviews[userSearchReview].getRating() == calculatedSentimentScore)
+	if (hotelReviews.get(userSearchReview).getRating() == calculatedSentimentScore)
 	{
 		std::cout << "User's subjective evaluation matches the sentiment score provided by the analysis. \n";
 		std::cout << "There is a consistency between the sentiment score generated by the analysis and the user's evaluation of the sentiment.\n";

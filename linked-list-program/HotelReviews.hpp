@@ -8,21 +8,19 @@
 #include <chrono>
 #include "HotelReview.hpp"
 #include "Words.hpp"
+#include "LinkedListCustom.hpp"
 
 class HotelReviews
 {
 private:
-	HotelReview *hotelReviews;
-	int arraySize;
-	int count;
+	LinkedListCustom<HotelReview> hotelReviews;
 	const int MAXWORDS = 10000;
 
 public:
-	HotelReviews(int size, const std::string &hotelCsvFile);
+	HotelReviews(const std::string &hotelCsvFile);
 	~HotelReviews();
 	HotelReview getReview(int index) const;
 	int getCount() const;
-	void displayReviews(int numberOfReviews = 10) const;
 	void calculateWordFrequencies(const Words &positiveWords, const Words &negativeWords);
 	void analyzeSingleReview(const Words &positiveWords, const Words &negativeWords);
 	double calculateSentimentScore(int positiveWordCount, int negativeWordCount);

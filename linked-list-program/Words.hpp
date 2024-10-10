@@ -4,15 +4,16 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include "LinkedListCustom.hpp"
 
 class Words
 {
 private:
-	std::string *words;
+	LinkedListCustom<std::string> words;
 	int size;
 
 public:
-	Words(const std::string &wordsFile, int arraySize);
+	Words(const std::string &wordsFile);
 	~Words();
 	std::string getWord(int index) const;
 	int getSize() const;

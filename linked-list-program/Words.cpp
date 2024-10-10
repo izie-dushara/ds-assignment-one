@@ -1,9 +1,7 @@
 #include "Words.hpp"
 
-Words::Words(const std::string &wordsFile, int arraySize)
-	: size(arraySize)
+Words::Words(const std::string &wordsFile)
 {
-	words = new std::string[size];
 	std::ifstream wordsTxtFile(wordsFile);
 	std::string line;
 	int index = 0;
@@ -12,8 +10,7 @@ Words::Words(const std::string &wordsFile, int arraySize)
 	{
 		while (std::getline(wordsTxtFile, line) && index < size)
 		{
-			words[index] = line;
-			index++;
+			words.add(line);
 		}
 		wordsTxtFile.close();
 	}
@@ -26,26 +23,21 @@ Words::Words(const std::string &wordsFile, int arraySize)
 
 Words::~Words()
 {
-	delete[] words;
 }
 
 std::string Words::getWord(int index) const
 {
-	if (index >= 0 && index < size)
-	{
-		return words[index];
-	}
-	return "";
+	return words.get(index);
 }
 
 int Words::getSize() const
 {
-	return size;
+	return words.getSize();
 }
 
 bool Words::contains(const std::string &words) const
 {
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 0; i < Words::getSize(); i++)
 	{
 		if (Words::getWord(i) == words)
 			return true;
