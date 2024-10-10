@@ -77,6 +77,7 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 	int negativeWordFrequencies[10000] = {0};
 	int uniqueNegativeWordCount = 0;
 
+	auto startSearching = std::chrono::high_resolution_clock::now();
 	for (size_t i = 0; i < HotelReviews::getCount(); i++)
 	{
 		std::string hotelReview = hotelReviews[i].getReview();
@@ -85,7 +86,6 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 		while (iss >> targetWord)
 		{
 			targetWord.erase(remove_if(targetWord.begin(), targetWord.end(), ispunct), targetWord.end());
-
 			if (positiveWords.contains(targetWord))
 			{
 				int wordIndex = findWordIndex(targetWord, positiveWordsList, uniquePositiveWordCount);
@@ -102,7 +102,7 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 						uniquePositiveWordCount++;
 
 						if (uniquePositiveWordCount % 100 == 0)
-							std::cout << "Processing information. Might take a while. Grab a cup of coffee first~ \n";
+							std::cout << "Processing information. Might take a while (around 5 ~ 7 minutes). Grab a cup of coffee first~ \n";
 					}
 					else
 					{
@@ -136,21 +136,24 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 			}
 		}
 	}
+	auto stopSearching = std::chrono::high_resolution_clock::now();
 
-	auto start = std::chrono::high_resolution_clock::now();
+	auto startSorting = std::chrono::high_resolution_clock::now();
 	// insertionSort(positiveWordsList, positiveWordFrequencies, uniquePositiveWordCount);
 	// insertionSort(negativeWordsList, negativeWordFrequencies, uniqueNegativeWordCount);
 	mergeSort(positiveWordsList, positiveWordFrequencies, 0, uniquePositiveWordCount - 1);
 	mergeSort(negativeWordsList, negativeWordFrequencies, 0, uniqueNegativeWordCount - 1);
-	auto stop = std::chrono::high_resolution_clock::now();
+	auto stopSorting = std::chrono::high_resolution_clock::now();
 	system("cls");
 	std::cout << "Total Reviews: " << HotelReviews::getCount() - 1 << "\n";
 	std::cout << "Total Counts of Positive Words Used = " << positiveCountOverall << "\n";
 	std::cout << "Total Counts of Negative Words Used = " << negativeCountOverall << "\n";
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	auto durationSorting = std::chrono::duration_cast<std::chrono::microseconds>(stopSorting - startSorting);
 	// std::cout << "Total Time Sorting Word With Insertion Sort Ascending = " << duration.count() << " microseconds\n";
-	std::cout << "Total Time Sorting Word With Merge Sort Ascending = " << duration.count() << " microseconds\n";
-
+	std::cout << "Total Time Sorting Word With Merge Sort Ascending = " << durationSorting.count() << " microseconds\n";
+	
+	auto durationSearching = std::chrono::duration_cast<std::chrono::seconds>(stopSearching - startSearching);
+	std::cout << "Total Time Searching and Organizing = " << durationSearching.count() << " seconds\n";
 	int limitPositive = std::min(uniquePositiveWordCount, 20);
 	int limitNegative = std::min(uniqueNegativeWordCount, 20);
 
@@ -181,16 +184,6 @@ void HotelReviews::calculateWordFrequencies(const Words &positiveWords, const Wo
 	}
 }
 
-// Display reviews (for debugging or output)
-void HotelReviews::displayReviews(int numberOfReviews) const
-{
-	for (size_t i = 0; i < std::min(count, numberOfReviews); i++)
-	{
-		std::cout << hotelReviews[i].getIndex() << ": "
-				  << hotelReviews[i].getReview() << " - Rating: "
-				  << hotelReviews[i].getRating() << "\n";
-	}
-}
 
 void HotelReviews::insertionSort(std::string wordList[], int frequencies[], int count)
 {

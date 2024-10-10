@@ -22,7 +22,6 @@ public:
 	~HotelReviews();
 	HotelReview getReview(int index) const;
 	int getCount() const;
-	void displayReviews(int numberOfReviews = 10) const;
 	void calculateWordFrequencies(const Words &positiveWords, const Words &negativeWords);
 	void analyzeSingleReview(const Words &positiveWords, const Words &negativeWords);
 	double calculateSentimentScore(int positiveWordCount, int negativeWordCount);
